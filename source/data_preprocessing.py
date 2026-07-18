@@ -4,7 +4,7 @@ from pathlib import Path
 
 target_fs = 100
 data_root=Path("./datasets/ecg_data/")
-target_root=Path("./datasets/ecg_data_chagas_processed")
+target_root=Path("./datasets/ecg_data_processed")
 
 
 data_folder_ribeiro_test = data_root/"ribeiro2020_test"
@@ -92,7 +92,7 @@ reformat_as_memmap(
 data_folder_code_15 = data_root/"code_15"
 target_folder_code_15 = target_root/("code_15_fs" + str(target_fs))
 
-df_code_15, lbl_itos_code_15, mean_code_15, std_code_15 = prepare_data_code_15_chagas(
+df_code_15, lbl_itos_code_15, mean_code_15, std_code_15 = prepare_data_code_15(
     data_folder_code_15, 
     target_fs = target_fs, 
     channels = 12, 

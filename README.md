@@ -1,4 +1,15 @@
-# 🫀 ECG-Soup: Harnessing Multi-Layer Synergy for ECG Foundation Models
+<h1 align="center">🫀 ECG-Soup: Harnessing Multi-Layer Synergy for ECG Foundation Models</h1>
+
+<p align="center">
+  <a href="https://arxiv.org/abs/2509.00102"><img src="https://img.shields.io/badge/arXiv-2509.00102-b31b1b.svg" alt="arXiv"></a>
+  <a href="https://github.com/Xuanphu108/ecg_ssl"><img src="https://img.shields.io/badge/Code-GitHub-181717.svg?logo=github" alt="GitHub"></a>
+  <img src="https://img.shields.io/badge/PhysioNet%20Challenge%202025-🥇%201st%20Place-ffd700.svg" alt="PhysioNet Challenge 2025 - 1st Place">
+</p>
+
+<p align="center">
+  <b>📄 Paper:</b> <a href="https://arxiv.org/abs/2509.00102">ECG-Soup: Harnessing Multi-Layer Synergy for ECG Foundation Models</a> (arXiv:2509.00102)
+</p>
+
 This is the official code repository accompanying my work on **ECG-Soup: Harnessing Multi-Layer Synergy for ECG Foundation Models**.  
 The project provides implementations for several self-supervised and supervised training paradigms on multi-source ECG datasets.
 
@@ -19,17 +30,87 @@ pip install pandas==1.4.1
 ```
 
 ### 2. Data Preparation
-Follow the instructions in `data_preprocessing.py` to download and preprocess the ECG datasets.  
-The expected directory structure after preprocessing:
+
+This project uses five publicly available 12-lead ECG datasets. Download each dataset from its official source and arrange it under `./datasets/ecg_data/` using the **exact folder names** expected by `source/data_preprocessing.py`.
+
+#### 2.1 Download the raw datasets
+
+| Dataset | Source | Target folder (`./datasets/ecg_data/`) |
+|---------|--------|----------------------------------------|
+| **PTB-XL** | [physionet.org/content/ptb-xl/1.0.1](https://physionet.org/content/ptb-xl/1.0.1/) | `ptb_xl/` |
+| **CinC 2020** | [physionet.org/content/challenge-2020/1.0.2](https://physionet.org/content/challenge-2020/1.0.2/) | `cinc2020/` |
+| **Zheng (Chapman–Shaoxing)** | [figshare.com/collections/ChapmanECG/4560497](https://figshare.com/collections/ChapmanECG/4560497/2) | `zheng2020/` |
+| **Ribeiro (CODE-test)** | [zenodo.org/records/3765780](https://zenodo.org/records/3765780) | `ribeiro2020_test/` |
+| **CODE-15%** | [zenodo.org/records/4916206](https://zenodo.org/records/4916206) | `code_15/` |
+
+```bash
+# PTB-XL (~3 GB)
+wget -r -N -c -np https://physionet.org/files/ptb-xl/1.0.1/
+
+# CinC 2020 — PhysioNet/CinC Challenge 2020 (~7.5 GB); the ECG data lives in the training/ folder.
+# NOTE: the /sources/ folder on PhysioNet contains teams' submitted code, NOT the ECG data.
+wget -r -N -c -np https://physionet.org/files/challenge-2020/1.0.2/
+
+# Ribeiro CODE-test (~218 MB)
+wget https://zenodo.org/records/3765780/files/data.zip
+
+# CODE-15% (~46 GB): exams.csv + exams_part0..17.zip
+wget https://zenodo.org/records/4916206/files/exams.csv
+for i in $(seq 0 17); do wget "https://zenodo.org/records/4916206/files/exams_part${i}.zip"; done
+```
+
+#### 2.2 Expected raw directory layout
 
 ```
-./datasets/
-  ├─ ecg_data_processed/
-    ├─ cinc/
-    ├─ zheng/
-    ├─ ribeiro/
-    ├─ code_15/
-    └─ ptb_xl/
+./datasets/ecg_data/
+  ├─ ptb_xl/                 # PTB-XL
+  │   ├─ ptbxl_database.csv
+  │   ├─ scp_statements.csv
+  │   └─ records100/         # (records500/ also works when target_fs > 100)
+  ├─ cinc2020/               # PhysioNet/CinC Challenge 2020 (training data)
+  │   ├─ dx_mapping_scored.csv
+  │   ├─ dx_mapping_unscored.csv
+  │   ├─ ICBEB2018/          # renamed from cpsc_2018
+  │   ├─ ICBEB2018_2/        # renamed from cpsc_2018_extra
+  │   ├─ INCART/             # renamed from st_petersburg_incart
+  │   ├─ PTB/                # renamed from ptb
+  │   ├─ PTB-XL/             # renamed from ptb-xl
+  │   └─ Georgia/            # renamed from georgia
+  ├─ zheng2020/              # Chapman–Shaoxing (Zheng et al. 2020)
+  │   ├─ Diagnostics.xlsx
+  │   └─ ECGData/            # per-record CSVs (or ECGDataDenoised/ with denoised=True)
+  ├─ ribeiro2020_test/       # CODE-test (unzipped data.zip)
+  │   ├─ ecg_tracings.hdf5
+  │   ├─ attributes.csv
+  │   └─ annotations/        # cardiologist1.csv, gold_standard.csv, dnn.csv, ...
+  └─ code_15/                # CODE-15%
+      ├─ exams.csv
+      └─ hdf5/               # all exams_part0.hdf5 ... exams_part17.hdf5
+```
+
+> **CinC folder renaming.** PhysioNet ships the Challenge 2020 sources with different folder names. Rename them to match `prepare_data_cinc`:
+> `cpsc_2018 → ICBEB2018`, `cpsc_2018_extra → ICBEB2018_2`, `st_petersburg_incart → INCART`, `ptb → PTB`, `ptb-xl → PTB-XL`, `georgia → Georgia`.
+>
+> **CODE-15.** Unzip every `exams_part{i}.zip` into a single `code_15/hdf5/` folder and keep `exams.csv` at the `code_15/` root.
+
+#### 2.3 Preprocess
+
+Run the preprocessing script to resample every dataset to **100 Hz** and export a unified memory-mapped format:
+
+```bash
+cd source
+python data_preprocessing.py
+```
+
+The processed datasets are written to `./datasets/ecg_data_processed/`:
+
+```
+./datasets/ecg_data_processed/
+  ├─ ptb_xl_fs100/
+  ├─ cinc_fs100/
+  ├─ zheng_fs100/
+  ├─ ribeiro_fs100/
+  └─ code_15_fs100/
 ```
 
 ---
