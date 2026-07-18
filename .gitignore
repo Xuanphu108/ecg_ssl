@@ -1,0 +1,65 @@
+# ==== Data & datasets ====
+datasets/
+data/
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.mat
+*.pkl
+*.pickle
+*.parquet
+*.csv
+*.tsv
+*.feather
+
+# ==== Experiment outputs, logs & checkpoints ====
+experiment_logs/
+runs/
+logs/
+outputs/
+wandb/
+lightning_logs/
+tb_logs/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.log
+
+# ==== Large / binary files ====
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.7z
+*.rar
+
+# ==== Python ====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ==== Virtual environments ====
+.venv/
+venv/
+env/
+.env
+
+# ==== Editors & OS ====
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
