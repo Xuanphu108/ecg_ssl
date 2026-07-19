@@ -63,29 +63,30 @@ for i in $(seq 0 17); do wget "https://zenodo.org/records/4916206/files/exams_pa
 
 ```
 ./datasets/ecg_data/
-  ├─ ptb_xl/                 # PTB-XL
+  ├─ ptb_xl/                 
   │   ├─ ptbxl_database.csv
   │   ├─ scp_statements.csv
-  │   └─ records100/         # (records500/ also works when target_fs > 100)
-  ├─ cinc2020/               # PhysioNet/CinC Challenge 2020 (training data)
+  │   └─ records100/         
+  ├─ cinc2020/               
   │   ├─ dx_mapping_scored.csv
   │   ├─ dx_mapping_unscored.csv
-  │   ├─ ICBEB2018/          # renamed from cpsc_2018
-  │   ├─ ICBEB2018_2/        # renamed from cpsc_2018_extra
-  │   ├─ INCART/             # renamed from st_petersburg_incart
-  │   ├─ PTB/                # renamed from ptb
-  │   ├─ PTB-XL/             # renamed from ptb-xl
-  │   └─ Georgia/            # renamed from georgia
-  ├─ zheng2020/              # Chapman–Shaoxing (Zheng et al. 2020)
+  │   ├─ Dx_map.csv          
+  │   ├─ ICBEB2018/         
+  │   ├─ ICBEB2018_2/        
+  │   ├─ INCART/             
+  │   ├─ PTB/                
+  │   ├─ PTB-XL/             
+  │   └─ Georgia/            
+  ├─ zheng2020/              
   │   ├─ Diagnostics.xlsx
-  │   └─ ECGData/            # per-record CSVs (or ECGDataDenoised/ with denoised=True)
-  ├─ ribeiro2020_test/       # CODE-test (unzipped data.zip)
+  │   └─ ECGData/            
+  ├─ ribeiro2020_test/       
   │   ├─ ecg_tracings.hdf5
   │   ├─ attributes.csv
-  │   └─ annotations/        # cardiologist1.csv, gold_standard.csv, dnn.csv, ...
-  └─ code_15/                # CODE-15%
+  │   └─ annotations/        
+  └─ code_15/                
       ├─ exams.csv
-      └─ hdf5/               # all exams_part0.hdf5 ... exams_part17.hdf5
+      └─ hdf5/               
 ```
 
 > **CinC folder renaming.** PhysioNet ships the Challenge 2020 sources with different folder names. Rename them to match `prepare_data_cinc`:
